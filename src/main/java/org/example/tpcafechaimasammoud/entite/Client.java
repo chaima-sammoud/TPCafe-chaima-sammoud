@@ -43,5 +43,4 @@ public class Client {
     private List<Commande> commandes = new ArrayList<>();
 
 
-
 }
