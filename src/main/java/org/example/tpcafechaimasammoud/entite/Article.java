@@ -1,22 +1,41 @@
 package org.example.tpcafechaimasammoud.entite;
 
+import java.util.ArrayList;
+
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import java.util.List;
 
 @Entity
-@Table(name ="article")
+@Table(name = "article")
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_article")
     private Long idArticle;
-    @Column(name="nomArticle")
+
+    @Column(name = "nom_article")
     private String nomArticle;
-    @Column(name="prixArticle")
+
+    @Column(name = "prix_article")
     private float prixArticle;
-    @Enumerated (EnumType.STRING)
-    @Column(name="TypeArticle")
-    private TypeArticle TypeArticle;
 
+    @Column(name = "type_article")
+    @Enumerated(EnumType.STRING)
+    private TypeArticle typeArticle;
 
+    // One Article can be referenced by many Detail_Commande
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Detail_Commande> detailCommandes = new ArrayList<>();
 
+    // Many-to-many between Article and Promotion
+    @ManyToMany
+    @JoinTable(name = "article_promotion", joinColumns = @JoinColumn(name = "id_article"), inverseJoinColumns = @JoinColumn(name = "id_promotion"))
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Promotion> promotions = new ArrayList<>();
 
 }

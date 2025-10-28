@@ -1,8 +1,13 @@
 package org.example.tpcafechaimasammoud.entite;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Table(name = "client")
@@ -20,6 +25,22 @@ public class Client {
 
     @Column(name = "date_naissance")
     private LocalDate dateNaissance;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_adresse", referencedColumnName = "id_adresse")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Adresse adresse;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_carte_fidelite", referencedColumnName = "id_carte_fidelite")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private CarteFidelite carteFidelite;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Commande> commandes = new ArrayList<>();
 
 
 
