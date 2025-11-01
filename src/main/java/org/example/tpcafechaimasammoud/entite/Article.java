@@ -3,12 +3,20 @@ package org.example.tpcafechaimasammoud.entite;
 import java.util.ArrayList;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import java.util.List;
 
 @Entity
 @Table(name = "article")
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@ToString
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

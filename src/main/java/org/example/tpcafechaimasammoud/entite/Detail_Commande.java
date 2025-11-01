@@ -1,11 +1,18 @@
 package org.example.tpcafechaimasammoud.entite;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "detail_commande")
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@ToString
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Detail_Commande {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
