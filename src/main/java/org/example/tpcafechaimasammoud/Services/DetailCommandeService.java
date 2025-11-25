@@ -1,10 +1,13 @@
 package org.example.tpcafechaimasammoud.Services;
 
+import lombok.AllArgsConstructor;
 import org.example.tpcafechaimasammoud.entite.Detail_Commande;
 import org.example.tpcafechaimasammoud.repositeries.Detail_CommandeRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
+@AllArgsConstructor
 public class DetailCommandeService implements IDetailCommandeService {
     Detail_CommandeRepository detailCommandeRepository;
 

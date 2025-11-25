@@ -1,11 +1,14 @@
 package org.example.tpcafechaimasammoud.Services;
 
+import lombok.AllArgsConstructor;
 import org.example.tpcafechaimasammoud.entite.Promotion;
 import org.example.tpcafechaimasammoud.repositeries.PromotionRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-
+@Service
+@AllArgsConstructor
 public class PromotionService implements IPromotionService {
     PromotionRepository promotionRepository;
 

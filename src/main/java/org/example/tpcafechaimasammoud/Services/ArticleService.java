@@ -1,10 +1,13 @@
 package org.example.tpcafechaimasammoud.Services;
 
+import lombok.AllArgsConstructor;
 import org.example.tpcafechaimasammoud.entite.Article;
 import org.example.tpcafechaimasammoud.repositeries.ArticleRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
+@AllArgsConstructor
 public class ArticleService implements IArticleService {
     ArticleRepository articleRepository;
 
@@ -61,4 +64,6 @@ public class ArticleService implements IArticleService {
     public boolean verifArticleById(long id) {
         return articleRepository.existsById(id);
     }
+
+
 }

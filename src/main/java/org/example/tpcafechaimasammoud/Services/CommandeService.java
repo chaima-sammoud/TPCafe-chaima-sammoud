@@ -1,11 +1,15 @@
 package org.example.tpcafechaimasammoud.Services;
 
+import lombok.AllArgsConstructor;
+import org.example.tpcafechaimasammoud.entite.Client;
 import org.example.tpcafechaimasammoud.entite.Commande;
 import org.example.tpcafechaimasammoud.repositeries.CommandeRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-
+@Service
+@AllArgsConstructor
 public class CommandeService implements ICommandeService {
     CommandeRepository commandeRepository;
 
@@ -61,5 +65,18 @@ public Commande selectCommandeByIdWithOrElse(long id) {
     @Override
     public boolean verifCommandeById(long id) {
         return commandeRepository.existsById(id);
+    }
+    @Override
+    public void affecterCommandeAClient(Long idCommande, Long idClient) {
+        //Recuperer les objets
+        Commande commande=CommandeRepository.findById(idCommande).get();
+        Client client=CommandeRepository.findById(idClient).get();
+        //2-parent (commande)? child (client)?
+        //3 on affecte le child au paerent
+        commande.setClient(client);
+        //4-Persistance de affection (save du parent)
+        CommandeRepository.save(commande);
+
+
     }
 }

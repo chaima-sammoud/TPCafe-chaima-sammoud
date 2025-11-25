@@ -1,11 +1,14 @@
 package org.example.tpcafechaimasammoud.Services;
 
+import lombok.AllArgsConstructor;
 import org.example.tpcafechaimasammoud.entite.Client;
 import org.example.tpcafechaimasammoud.repositeries.ClientRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-
+@Service
+@AllArgsConstructor
 public class ClientService implements IClientService {
     ClientRepository clientRepository;
 
