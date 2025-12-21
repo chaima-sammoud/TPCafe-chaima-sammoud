@@ -1,86 +1,157 @@
 package org.example.tpcafechaimasammoud.Services;
 
-import lombok.AllArgsConstructor;
-import org.example.tpcafechaimasammoud.entite.Client;
-import org.example.tpcafechaimasammoud.repositeries.CarteFideliteRepository;
-import org.example.tpcafechaimasammoud.repositeries.ClientRepository;
-import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+import org.example.tpcafechaimasammoud.dto.client.ClientRequest;
+import org.example.tpcafechaimasammoud.dto.client.ClientResponse;
+import org.springframework.stereotype.Service;
+import org.example.tpcafechaimasammoud.dto.*;
+import org.example.tpcafechaimasammoud.entite.*;
+import org.example.tpcafechaimasammoud.Mapper.*;
+import org.example.tpcafechaimasammoud.repositeries.*;
 import java.time.LocalDate;
 import java.util.List;
 @Service
 @AllArgsConstructor
-public class ClientService implements IClientService {
-    ClientRepository clientRepository;
-    CarteFideliteRepository carteFideliteRepository;
+public class ClientService implements IClientService{
+    ClientRepository repo;
+    CommandeRepository commandeRepo;
+    AdresseRepository adresseRepo;
+    CarteFideliteRepository carteFideliteRepo;
+    ClientMapper mapper;
 
     @Override
-    public Client addClient(Client client) {
-        return clientRepository.save(client);
+    public Client addClient(Client a) {
+        return repo.save(a);
     }
 
     @Override
-    public List<Client> saveClients(List<Client> clients) {
-        return clientRepository.saveAll(clients);
+    public ClientResponse saveClientDTO(ClientRequest c) {
+        return mapper.fromEntityToDTO(repo.save(mapper.fromDTOToEntity(c)));
+    }
+
+    @Override
+    public List<Client> saveClient(List<Client> clients) {
+        return repo.saveAll(clients);
+    }
+
+    @Override
+    public List<ClientResponse> saveListClientsDTO(List<ClientRequest> c) {
+        return mapper.fromListEntityToDTO(repo.saveAll(mapper.fromListDTOToListEntity(c)));
     }
 
     @Override
     public Client selectClientByIdWithGet(long id) {
-        return clientRepository.findById(id).get();
+        return repo.findById(id).get();
     }
 
     @Override
-public Client selectClientByIdWithOrElse(long id) {
-    Client fakeClient = Client.builder()
-        .nom("Sammoud")
-        .prenom("Chaima")
-        .dateNaissance(LocalDate.of(1990, 1, 1))
-        .build();
-    return clientRepository.findById(id).orElse(fakeClient);
-}
-
-    @Override
-    public List<Client> selectAllClients() {
-        return clientRepository.findAll();
+    public ClientResponse getClientByIdDTO(long id) {
+        return mapper.fromEntityToDTO(repo.findById(id).get());
     }
 
     @Override
-    public void deleteClient(Client client) {
-        clientRepository.delete(client);
+    public Client selectClientByIdWithOrElse(long id) {
+        Client fakeClient = Client.builder()
+                .idClient(-1L)
+                .nom("Fake")
+                .prenom("Fake")
+                .dateNaissance(null)
+                .build();
+        return repo.findById(id).orElse(fakeClient);
     }
 
     @Override
-    public void deleteAllClients() {
-        clientRepository.deleteAll();
+    public List<Client> selectAllClient() {
+        return repo.findAll();
+    }
+
+    @Override
+    public List<ClientResponse> getAllClientsDTO() {
+        return mapper.fromListEntityToDTO(repo.findAll());
+    }
+
+    @Override
+    public void deleteClient(Client a) {
+        repo.delete(a);
+    }
+
+    @Override
+    public void deleteAllClient() {
+        repo.deleteAll();
     }
 
     @Override
     public void deleteClientById(long id) {
-        clientRepository.deleteById(id);
+        repo.deleteById(id);
     }
 
     @Override
-    public long countingClients() {
-        return clientRepository.count();
+    public long countingClient() {
+        return repo.count();
     }
 
     @Override
     public boolean verifClientById(long id) {
-        return clientRepository.existsById(id);
+        return repo.existsById(id);
     }
 
     @Override
-    public List<Client> incrementerPts(){
-        List<Client> list = clientRepository.findByDateNaissance(LocalDate.now());
-        for (Client c : list) {
-            c.getCarteFidelite().setPointsAccumules((int) (c.getCarteFidelite().getPointsAccumules()
-                    + (c.getCarteFidelite().getPointsAccumules() * 0.1)));
-            carteFideliteRepository.save(c.getCarteFidelite());
-        }
-        return list;
-
-        }
+    public void ajouterClient(Client c) {
+        repo.save(c);
     }
 
-    //@Override
-    //public void ajouterCommandeEtAffecterAClient(Commande c , )
+    @Override
+    public void ajouterCommandeEtAffecterAClient(Commande c, String nomClient, String prenomClient) {
+//        commandeRepo.save(c);
+//        Commande commande = commandeRepo.findById(c.getIdCommande()).get();
+        c = commandeRepo.save(c);
+        Client client = repo.findByNomAndPrenom(nomClient,prenomClient);
+        c.setClient(client);
+        commandeRepo.save(c);
+    }
+
+    @Override
+    public void ajouterEtAffecterAdresseAClient(Adresse adresse, Client client) {
+        client.setAdresse(adresse);
+        repo.save(client);
+    }
+
+    @Override
+    public void ajoutClientEtCarteFidelite(CarteFidelite carte) {
+        Client client = repo.save(carte.getClient());
+        carte = carteFideliteRepo.save(carte);
+
+        client.setCarteFidelite(carte);
+        repo.save(client);
+    }
+
+    @Override
+    public void ajouterClientEtCarteFideliteCascade(Client client) {
+            repo.save(client);
+    }
+
+    @Override
+    public void supprimerClientEtCarteFideliteCascade(Client client) {
+            repo.delete(client);
+    }
+
+    @Override
+    public void addClientEtCarteFidelite(Client client) {
+        // l'ajout de la carte se fait dans le code
+        CarteFidelite carte = CarteFidelite
+                .builder()
+                .build();
+        client.setCarteFidelite(carte);
+        repo.save(client);
+    }
+
+    @Override
+    public List<Client> incrementerPts() {
+            List<Client> clients = repo.findByDateNaissance(LocalDate.now());
+
+
+        return clients;
+    }
+
+}

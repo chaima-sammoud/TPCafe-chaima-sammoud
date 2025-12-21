@@ -1,81 +1,130 @@
 package org.example.tpcafechaimasammoud.Services;
 
 import lombok.AllArgsConstructor;
-import org.example.tpcafechaimasammoud.entite.Client;
-import org.example.tpcafechaimasammoud.entite.Commande;
-import org.example.tpcafechaimasammoud.repositeries.CommandeRepository;
+import org.example.tpcafechaimasammoud.dto.commande.CommandeRequest;
+import org.example.tpcafechaimasammoud.dto.commande.CommandeResponse;
 import org.springframework.stereotype.Service;
+import org.example.tpcafechaimasammoud.dto.*;
+import org.example.tpcafechaimasammoud.entite.*;
+import org.example.tpcafechaimasammoud.Mapper.*;
+import org.example.tpcafechaimasammoud.repositeries.*;
 
 import java.time.LocalDate;
 import java.util.List;
 @Service
 @AllArgsConstructor
 public class CommandeService implements ICommandeService {
-    CommandeRepository commandeRepository;
-
+    CommandeRepository repo;
+    CommandeMapper mapper;
+    ClientRepository clientRepo;
     @Override
-    public Commande addCommande(Commande commande) {
-        return commandeRepository.save(commande);
+    public Commande addCommande(Commande a) {
+        return repo.save(a);
     }
 
     @Override
-    public List<Commande> saveCommandes(List<Commande> commandes) {
-        return commandeRepository.saveAll(commandes);
+    public CommandeResponse saveCommandeDTO(CommandeRequest c) {
+        return mapper.fromEntityToDTO(repo.save(mapper.fromDTOToEntity(c)));
+    }
+
+    @Override
+    public List<Commande> saveCommande(List<Commande> commandes) {
+        return repo.saveAll(commandes);
+    }
+
+    @Override
+    public List<CommandeResponse> saveListCommandesDTO(List<CommandeRequest> c) {
+        return mapper.fromListEntityToListDTO(repo.saveAll(mapper.fromListDTOToListEntity(c)));
     }
 
     @Override
     public Commande selectCommandeByIdWithGet(long id) {
-        return commandeRepository.findById(id).get();
+        return repo.findById(id).get();
     }
 
     @Override
-public Commande selectCommandeByIdWithOrElse(long id) {
-    Commande fakeCommande = Commande.builder()
-        .dateCommande(LocalDate.now())
-        .totalCommande(1200)
-        .build();
-    return commandeRepository.findById(id).orElse(fakeCommande);
-}
-
-    @Override
-    public List<Commande> selectAllCommandes() {
-        return commandeRepository.findAll();
+    public CommandeResponse getCommandeByIdDTO(long id) {
+        return mapper.fromEntityToDTO(repo.findById(id).get());
     }
 
     @Override
-    public void deleteCommande(Commande commande) {
-        commandeRepository.delete(commande);
+    public Commande selectCommandeByIdWithOrElse(long id) {
+        Commande fakeCommande = Commande.builder()
+                .dateCommande(null)
+                .totalCommande(0)
+                .build();
+        return repo.findById(id).orElse(fakeCommande);
     }
 
     @Override
-    public void deleteAllCommandes() {
-        commandeRepository.deleteAll();
+    public List<Commande> selectAllCommande() {
+        return repo.findAll();
+    }
+
+    @Override
+    public List<CommandeResponse> getAllCommandesDTO() {
+        return mapper.fromListEntityToListDTO(repo.findAll());
+    }
+
+    @Override
+    public void deleteCommande(Commande a) {
+        repo.delete(a);
+    }
+
+    @Override
+    public void deleteAllCommande() {
+        repo.deleteAll();
     }
 
     @Override
     public void deleteCommandeById(long id) {
-        commandeRepository.deleteById(id);
+        repo.deleteById(id);
     }
 
     @Override
-    public long countingCommandes() {
-        return commandeRepository.count();
+    public long countingCommande() {
+        return repo.count();
     }
 
     @Override
     public boolean verifCommandeById(long id) {
-        return commandeRepository.existsById(id);
+        return repo.existsById(id);
     }
-   // @Override
-   // public void affecterCommandeAClient(Long idCommande, Long idClient) {
-        //Recuperer les objets
-     //   Commande commande=CommandeRepository.findById(idCommande).get();
-       // Client client=CommandeRepository.findById(idClient).get();
-        //2-parent (commande)? child (client)?
-        //3 on affecte le child au paerent
-        //commande.setClient(client);
-        //4-Persistance de affection (save du parent)
-        //CommandeRepository.save(commande);
+
+    @Override
+    public void affecterCommandeAClient(long idCommande, long idClient) {
+        // 1- Recuper les Objets
+        Commande commande = repo.findById(idCommande).get();
+        Client client = clientRepo.findById(idClient).get();
+        // 2- Parent (Commande) ? Child (Client)
+        // 3- On affecte le Child au Parent
+        commande.setClient(client);
+        // 4- Persistance de l'affectation (save au parent)
+        repo.save(commande);
+    }
+
+    @Override
+    public void affecterCommandeAClient2(LocalDate dateCommande, String nomClient, String prenomClient) {
+        // 1- Recuper les Objets
+        Commande commande = repo.findByDateCommande(dateCommande);
+        Client client = clientRepo.findByNomAndPrenom(nomClient, prenomClient);
+        // 2- Parent (Commande) ? Child (Client)
+        // 3- On affecte le Child au Parent
+        commande.setClient(client);
+        // 4- Persistance de l'affectation (save au parent)
+        repo.save(commande);
+    }
+
+    @Override
+    public void desaffecterCommandeDeClient(long idCommande) {
+        // 1- Recuper les Objets
+        Commande commande = repo.findById(idCommande).get();
+        // 2- Parent (Commande) ? Child (Client)
+        // 3- On desaffecte le Child du Parent
+        commande.setClient(null);
+        // 4- Persistance de la desaffectation (save au parent)
+        repo.save(commande);
+    }
 
 
-    }
+}

@@ -3,9 +3,5 @@ package org.example.tpcafechaimasammoud.repositeries;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.example.tpcafechaimasammoud.entite.*;
 
-import java.time.LocalDate;
-
-public interface CommandeRepository extends JpaRepository<Commande,Long> {
-
-    Commande findByDateCommande(LocalDate dateCommande);
+public interface DetailCommandeRepository extends JpaRepository<Detail_Commande,Long> {
 }

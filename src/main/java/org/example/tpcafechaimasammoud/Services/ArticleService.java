@@ -1,89 +1,111 @@
 package org.example.tpcafechaimasammoud.Services;
 
-import lombok.AllArgsConstructor;
-import org.example.tpcafechaimasammoud.entite.Article;
-import org.example.tpcafechaimasammoud.entite.Promotion;
-import org.example.tpcafechaimasammoud.repositeries.ArticleRepository;
-import org.example.tpcafechaimasammoud.repositeries.PromotionRepository;
-import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+import org.example.tpcafechaimasammoud.dto.article.ArticleRequest;
+import org.example.tpcafechaimasammoud.dto.article.ArticleResponse;
+import org.springframework.stereotype.Service;
+import org.example.tpcafechaimasammoud.dto.*;
+import org.example.tpcafechaimasammoud.entite.*;
+import org.example.tpcafechaimasammoud.Mapper.*;
+import org.example.tpcafechaimasammoud.repositeries.*;
+
+import java.time.LocalDate;
 import java.util.List;
 @Service
 @AllArgsConstructor
-public class ArticleService implements IArticleService {
-    ArticleRepository articleRepository;
-    PromotionRepository promotionRepository;
-
+public class ArticleService implements IArticleService{
+    ArticleRepository repo;
+    ArticleMapper mapper;
     @Override
-    public Article addArticle(Article article) {
-        return articleRepository.save(article);
+    public Article addArticle(Article a) {
+        return repo.save(a);
     }
 
     @Override
-    public List<Article> saveArticles(List<Article> articles) {
-        return articleRepository.saveAll(articles);
+    public ArticleResponse saveArticleDTO(ArticleRequest a) {
+        return mapper.fromEntityToDTO(repo.save(mapper.fromDTOToEntity(a)));
+    }
+
+    @Override
+    public List<Article> saveArticle(List<Article> articles) {
+        return repo.saveAll(articles);
+    }
+
+    @Override
+    public List<ArticleResponse> saveListArticlesDTO(List<ArticleRequest> a) {
+        return mapper.fromListEntityToListDTO(repo.saveAll(mapper.fromListDTOToListEntity(a)));
     }
 
     @Override
     public Article selectArticleByIdWithGet(long id) {
-        return articleRepository.findById(id).get();
+        return repo.findById(id).get();
     }
 
     @Override
- public Article selectArticleByIdWithOrElse(long id) {
-    Article fakeArticle = Article.builder()
-        .nomArticle(" Article 1")
-        .prixArticle(1000)
-        .build();
-    return articleRepository.findById(id).orElse(fakeArticle);
-}
-
-    @Override
-    public List<Article> selectAllArticles() {
-        return articleRepository.findAll();
+    public ArticleResponse getArticleByIdDTO(long id) {
+        return mapper.fromEntityToDTO(repo.findById(id).get());
     }
 
     @Override
-    public void deleteArticle(Article article) {
-        articleRepository.delete(article);
+    public Article selectArticleByIdWithOrElse(long id) {
+        Article fakeArticle = Article.builder()
+                .nomArticle("cake")
+                .prixArticle(100)
+                .typeArticle(TypeArticle.SNACK)
+                .build();
+        return repo.findById(id).orElse(fakeArticle);
     }
 
     @Override
-    public void deleteAllArticles() {
-        articleRepository.deleteAll();
+    public List<Article> selectAllArticle() {
+        return repo.findAll();
+    }
+
+    @Override
+    public List<ArticleResponse> getAllArticlesDTO() {
+        return mapper.fromListEntityToListDTO(repo.findAll());
+    }
+
+    @Override
+    public void deleteArticle(Article a) {
+        repo.delete(a);
+    }
+
+    @Override
+    public void deleteAllArticle() {
+        repo.deleteAll();
     }
 
     @Override
     public void deleteArticleById(long id) {
-        articleRepository.deleteById(id);
+        repo.deleteById(id);
     }
 
     @Override
-    public long countingArticles() {
-        return articleRepository.count();
+    public long countingArticle() {
+        return repo.count();
     }
 
     @Override
     public boolean verifArticleById(long id) {
-        return articleRepository.existsById(id);
+        return repo.existsById(id);
     }
-
-
-
-        // 1- get larticle 2/article.getpromotion.add(promo 3/ artcilerepo.save(article)
 
     @Override
-    public void affecterPromotionAArticle(Promotion p , long idArticle) {
-
-
-        Article article = articleRepository.findById(idArticle).get();
-        article.getPromotions().add(p);
-        articleRepository.save(article);
-
+    public void ajouterArticleEtPromotionsCascade(Article article) {
+        repo.save(article);
     }
-    //afficher les article en promo
 
-
-
-
+    @Override
+    public void supprimerArticleEtPromotionsCascade(Article article) {
+        repo.delete(article);
     }
+
+    @Override
+    public List<Article> getArticlesEnPromotion() {
+        LocalDate now = LocalDate.now();
+        List<Article> articles = repo.findArticlesEnPromoByMonth(now);
+        return articles;
+    }
+}

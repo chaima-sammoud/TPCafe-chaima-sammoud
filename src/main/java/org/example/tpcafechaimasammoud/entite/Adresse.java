@@ -26,7 +26,7 @@ public class Adresse {
     private String ville;
 
     @Column(name = "code_postal")
-    private String codePostal;
+    private int codePostal;
 
     @OneToOne(mappedBy = "adresse")
     @ToString.Exclude

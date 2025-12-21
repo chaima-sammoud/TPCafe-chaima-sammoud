@@ -1,89 +1,125 @@
 package org.example.tpcafechaimasammoud.Services;
 
 import lombok.AllArgsConstructor;
-import org.example.tpcafechaimasammoud.entite.CarteFidelite;
-import org.example.tpcafechaimasammoud.entite.Client;
-import org.example.tpcafechaimasammoud.repositeries.CarteFideliteRepository;
-import org.example.tpcafechaimasammoud.repositeries.ClientRepository;
+import org.example.tpcafechaimasammoud.dto.carteFidelite.CarteFideliteRequest;
+import org.example.tpcafechaimasammoud.dto.carteFidelite.CarteFideliteResponse;
 import org.springframework.stereotype.Service;
+import org.example.tpcafechaimasammoud.dto.*;
+import org.example.tpcafechaimasammoud.entite.*;
+import org.example.tpcafechaimasammoud.Mapper.*;
+import org.example.tpcafechaimasammoud.repositeries.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 @Service
 @AllArgsConstructor
-public class CarteFideliteService implements ICarteFideliteService {
-    CarteFideliteRepository carteFideliteRepository;
-    ClientRepository clientRepository;
-
+public class CarteFideliteService implements ICarteFideliteService{
+    CarteFideliteRepository repo;
+    CarteFideliteMapper mapper;
+    ClientRepository clientRepo;
     @Override
-    public CarteFidelite addCarteFidelite(CarteFidelite carteFidelite) {
-        return carteFideliteRepository.save(carteFidelite);
+    public CarteFidelite addCarteFidelite(CarteFidelite a) {
+        return repo.save(a);
     }
 
     @Override
-    public List<CarteFidelite> saveCartesFidelite(List<CarteFidelite> cartesFidelite) {
-        return carteFideliteRepository.saveAll(cartesFidelite);
+    public CarteFideliteResponse saveCarteFideliteDTO(CarteFideliteRequest c) {
+        return mapper.fromEntityToDTO(repo.save(mapper.fromDTOToEntity(c)));
+    }
+
+    @Override
+    public List<CarteFidelite> saveCarteFidelite(List<CarteFidelite> carteFidilites) {
+        return repo.saveAll(carteFidilites);
+    }
+
+    @Override
+    public List<CarteFideliteResponse> saveListCarteFidelteDTO(List<CarteFideliteRequest> c) {
+        return mapper.fromListEntityToDTO(repo.saveAll(mapper.fromListDTOToListEntity(c)));
     }
 
     @Override
     public CarteFidelite selectCarteFideliteByIdWithGet(long id) {
-        return carteFideliteRepository.findById(id).get();
+        return repo.findById(id).get();
     }
 
     @Override
-public CarteFidelite selectCarteFideliteByIdWithOrElse(long id) {
-    CarteFidelite fakeCarteFidelite = CarteFidelite.builder()
-        .pointsAccumules(100)
-        .dateCreation(LocalDate.now())
-        .build();
-    return carteFideliteRepository.findById(id).orElse(fakeCarteFidelite);
-}
-
-    @Override
-    public List<CarteFidelite> selectAllCartesFidelite() {
-        return carteFideliteRepository.findAll();
+    public CarteFideliteResponse getCarteFideliteByIdDTO(long id) {
+        return mapper.fromEntityToDTO(repo.findById(id).get());
     }
 
     @Override
-    public void deleteCarteFidelite(CarteFidelite carteFidelite) {
-        carteFideliteRepository.delete(carteFidelite);
+    public CarteFidelite selectCarteFideliteByIdWithOrElse(long id) {
+        CarteFidelite fakeCarteFidelite = CarteFidelite.builder()
+                .build();
+        return repo.findById(id).orElse(fakeCarteFidelite);
     }
 
     @Override
-    public void deleteAllCartesFidelite() {
-        carteFideliteRepository.deleteAll();
+    public List<CarteFidelite> selectAllCarteFidelite() {
+        return repo.findAll();
+    }
+
+    @Override
+    public List<CarteFideliteResponse> getAllCarteFideliteDTO() {
+        return mapper.fromListEntityToDTO(repo.findAll());
+    }
+
+    @Override
+    public void deleteCarteFidelite(CarteFidelite a) {
+        repo.delete(a);
+    }
+
+    @Override
+    public void deleteAllCarteFidelite() {
+        repo.deleteAll();
     }
 
     @Override
     public void deleteCarteFideliteById(long id) {
-        carteFideliteRepository.deleteById(id);
+        repo.deleteById(id);
     }
 
     @Override
-    public long countingCartesFidelite() {
-        return carteFideliteRepository.count();
+    public long countingCarteFidelite() {
+        return repo.count();
     }
 
     @Override
     public boolean verifCarteFideliteById(long id) {
-        return carteFideliteRepository.existsById(id);
+        return repo.existsById(id);
     }
-    public void ajouterClientEtCarteFidelite(CarteFidelite carteFidelite) {
-        Client c=clientRepository.save(carteFidelite.getClient());
-        carteFidelite=carteFideliteRepository.save(carteFidelite);
-        // parent ?  howa client child ? howa carte fidelite
-        c.setCarteFidelite(carteFidelite);
-        clientRepository.save(c);
 
-        // Implementation pending
+    @Override
+    public void affecterCarteAClient(long idCarte, long idClient) {
+        // 1- findById -> carte (child)
+        CarteFidelite carte = repo.findById(idCarte).get();
+        // 1- findById -> client
+        Client client = clientRepo.findById(idClient).get();
+        // On affecte le child au parent set
+        client.setCarteFidelite(carte);
+        // Persiste .save
+
+
     }
-    public void addClientEtCarteFidelite(Client client){
-        // la creation de la carte fidelité se fait dans le code
-        CarteFidelite carteFidelite= CarteFidelite.builder()
-                .pointsAccumules(0)
-                .dateCreation(LocalDate.now())
-                .build();
-        client.setCarteFidelite(carteFidelite);
-        clientRepository.save(client);
+
+    @Override
+    public List<String> incrementerPointsFidelite() {
+        List<Client> clients = clientRepo.findAll();
+        List<String> clientsUpdated = new ArrayList<>();
+        for (Client c : clients) {
+            CarteFidelite carte = c.getCarteFidelite();
+            if (carte != null) {
+                LocalDate creationDate = carte.getDateCreation();
+                if (creationDate != null && creationDate.getMonth() == LocalDate.now().getMonth()) {
+                    int currentPoints = carte.getPointsAccumules();
+                    carte.setPointsAccumules(currentPoints + 100);
+                    repo.save(carte);
+                    clientsUpdated.add(c.getNom() + " " + c.getPrenom());
+                }
+            }
+        }
+        return clientsUpdated;
+
     }
 }

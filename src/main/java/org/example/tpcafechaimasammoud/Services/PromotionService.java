@@ -1,80 +1,171 @@
 package org.example.tpcafechaimasammoud.Services;
 
-import lombok.AllArgsConstructor;
-import org.example.tpcafechaimasammoud.entite.Promotion;
-import org.example.tpcafechaimasammoud.repositeries.PromotionRepository;
-import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+import org.example.tpcafechaimasammoud.dto.promotion.PromotionRequest;
+import org.example.tpcafechaimasammoud.dto.promotion.PromotionResponse;
+import org.springframework.stereotype.Service;
+import org.example.tpcafechaimasammoud.dto.*;
+import org.example.tpcafechaimasammoud.entite.*;
+import org.example.tpcafechaimasammoud.Mapper.*;
+import org.example.tpcafechaimasammoud.repositeries.*;
 import java.time.LocalDate;
 import java.util.List;
 @Service
 @AllArgsConstructor
-public class PromotionService implements IPromotionService {
-    PromotionRepository promotionRepository;
-
+public class PromotionService implements IPromotionService{
+    PromotionRepository repo;
+    PromotionMapper mapper;
+    ArticleRepository articleRepo;
     @Override
-    public Promotion addPromotion(Promotion promotion) {
-        return promotionRepository.save(promotion);
+    public Promotion addPromotion(Promotion a) {
+        return repo.save(a);
     }
 
     @Override
-    public List<Promotion> savePromotions(List<Promotion> promotions) {
-        return promotionRepository.saveAll(promotions);
+    public PromotionResponse savePromotionDTO(PromotionRequest p) {
+        return mapper.fromEntityToDTO(repo.save(mapper.fromDTOToEntity(p)));
+    }
+
+    @Override
+    public List<Promotion> savePromotion(List<Promotion> promotions) {
+        return repo.saveAll(promotions);
+    }
+
+    @Override
+    public List<PromotionResponse> saveListPromotionsDTO(List<PromotionRequest> p) {
+        return mapper.fromListEntityToDTO(repo.saveAll(mapper.fromListDTOToListEntity(p)));
     }
 
     @Override
     public Promotion selectPromotionByIdWithGet(long id) {
-        return promotionRepository.findById(id).get();
+        return repo.findById(id).get();
     }
 
     @Override
-public Promotion selectPromotionByIdWithOrElse(long id) {
-    Promotion fakePromotion = Promotion.builder()
-        .pourcentagePromo(0.0f)
-        .dateDebutPromo(LocalDate.now())
-        .dateFinPromo(LocalDate.now().plusDays(7))
-        .build();
-    return promotionRepository.findById(id).orElse(fakePromotion);
-}
-
-    @Override
-    public List<Promotion> selectAllPromotions() {
-        return promotionRepository.findAll();
+    public PromotionResponse getPromotionByIdDTO(long id) {
+        return mapper.fromEntityToDTO(repo.findById(id).get());
     }
 
     @Override
-    public void deletePromotion(Promotion promotion) {
-        promotionRepository.delete(promotion);
+    public Promotion selectPromotionByIdWithOrElse(long id) {
+        Promotion fakePromotion = Promotion.builder()
+                .dateDebutPromo(null)
+                .dateFinPromo(null)
+                .build();
+        return repo.findById(id).orElse(fakePromotion);
     }
 
     @Override
-    public void deleteAllPromotions() {
-        promotionRepository.deleteAll();
+    public List<Promotion> selectAllPromotion() {
+        return repo.findAll();
+    }
+
+    @Override
+    public List<PromotionResponse> getAllPromotionsDTO() {
+        return mapper.fromListEntityToDTO(repo.findAll());
+    }
+
+    @Override
+    public void deletePromotion(Promotion a) {
+        repo.delete(a);
+    }
+
+    @Override
+    public void deleteAllPromotion() {
+        repo.deleteAll();
     }
 
     @Override
     public void deletePromotionById(long id) {
-        promotionRepository.deleteById(id);
+        repo.deleteById(id);
     }
 
     @Override
-    public long countingPromotions() {
-        return promotionRepository.count();
+    public long countingPromotion() {
+        return repo.count();
     }
 
     @Override
     public boolean verifPromotionById(long id) {
-        return promotionRepository.existsById(id);
+        return repo.existsById(id);
     }
 
-
-        // 1- get larticle 2/article.getpromotion.add(promo 3/ artcilerepo.save(article)
-
-
-
-
-
-
-
-
+    @Override
+    public void affecterPromotionAArticle(long idPromotion, long idArticle) {
+        // 1- Recuperer les objets
+        Article article = articleRepo.findById(idArticle).get();
+        Promotion promotion = repo.findById(idPromotion).get();
+        // 2- Affecter la promotion a l'article
+        article.getPromotions().add(promotion);
+        // 3- Sauvegarder l'article mis a jour
+        articleRepo.save(article);
     }
+
+    @Override
+    public void desaffecterPromotionAArticle(long idPromotion, long idArticle) {
+        Article article = articleRepo.findById(idArticle).get();
+        Promotion promotion = repo.findById(idPromotion).get();
+        article.getPromotions().remove(promotion);
+        articleRepo.save(article);
+    }
+
+    // keyword
+
+    @Override
+    public List<Promotion> keywordFindByPourcentagePromo(String promo) {
+        return repo.findByPourcentagePromo(promo);
+    }
+    @Override
+    public List<Promotion> keywordFindByDateDebutPromo(LocalDate date) {
+        return repo.findByDateDebutPromo(date);
+    }
+    @Override
+    public List<Promotion> keywordFindByDateFinPromo(LocalDate date) {
+        return repo.findByDateFinPromo(date);
+    }
+    @Override
+    public boolean keywordExistsByPourcentagePromo(String promo) {
+        return repo.existsByPourcentagePromo(promo);
+    }
+    @Override
+    public long keywordCountByDateDebutPromoAfter(LocalDate date) {
+        return repo.countByDateDebutPromoAfter(date);
+    }
+    @Override
+    public List<Promotion> keywordFindByArticleIsNotEmpty() {
+        return repo.findByArticleEmpty();
+    }
+    @Override
+    public List<Promotion> keywordFindByPourcentagePromoAndDateDebutPromoBetween(String promo, LocalDate start, LocalDate end) {
+        return repo.findByPourcentagePromoAndDateDebutPromoBetween(promo, start, end);
+    }
+    @Override
+    public List<Promotion> keywordFindByPourcentagePromoOrderByDateDebutPromo(String promo) {
+        return repo.findByPourcentagePromoOrderByDateDebutPromo(promo);
+    }
+    @Override
+    public List<Promotion> keywordFindByArticleNotEmptyOrderByPourcentagePromo() {
+        return repo.findByArticleNotEmptyOrderByPourcentagePromo();
+    }
+    @Override
+    public List<Promotion> keywordFindByDateFinPromoIsNull() {
+        return repo.findByDateFinPromoIsNull();
+    }
+    @Override
+    public List<Promotion> keywordFindByPourcentagePromoIsNotNull() {
+        return repo.findByPourcentagePromoIsNotNull();
+    }
+    @Override
+    public List<Promotion> keywordFindByDateFinPromoBefore(LocalDate date) {
+        return repo.findByDateFinPromoBefore(date);
+    }
+
+    @Override
+    public void ajouterPromoEtAffecterAArticle(Promotion promo, long idArticle) {
+        Article article = articleRepo.findById(idArticle).get();
+        // Promotion promotion = repo.save(promo); optionel car cascade
+        article.getPromotions().add(promo);
+        articleRepo.save(article);
+    }
+}

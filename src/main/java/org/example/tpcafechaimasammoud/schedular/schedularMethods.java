@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.tpcafechaimasammoud.entite.Client;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.example.tpcafechaimasammoud.Services.ClientService;
-import java.util.List;
 
 
 @Component

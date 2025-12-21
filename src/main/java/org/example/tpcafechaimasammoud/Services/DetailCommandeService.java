@@ -1,68 +1,93 @@
 package org.example.tpcafechaimasammoud.Services;
 
 import lombok.AllArgsConstructor;
-import org.example.tpcafechaimasammoud.entite.Detail_Commande;
-import org.example.tpcafechaimasammoud.repositeries.Detail_CommandeRepository;
+import org.example.tpcafechaimasammoud.dto.detailCommande.DetailCommandeRequest;
+import org.example.tpcafechaimasammoud.dto.detailCommande.DetailCommandeResponse;
 import org.springframework.stereotype.Service;
+import org.example.tpcafechaimasammoud.dto.*;
+import org.example.tpcafechaimasammoud.entite.*;
+import org.example.tpcafechaimasammoud.Mapper.*;
+import org.example.tpcafechaimasammoud.repositeries.*;
 
 import java.util.List;
 @Service
 @AllArgsConstructor
 public class DetailCommandeService implements IDetailCommandeService {
-    Detail_CommandeRepository detailCommandeRepository;
+    DetailCommandeRepository repo;
+    DetailCommandeMapper mapper;
 
     @Override
-    public Detail_Commande addDetailCommande(Detail_Commande detailCommande) {
-        return detailCommandeRepository.save(detailCommande);
+    public Detail_Commande addDetailCommande(Detail_Commande a) {
+        return repo.save(a);
     }
 
     @Override
-    public List<Detail_Commande> saveDetailCommandes(List<Detail_Commande> detailCommandes) {
-        return detailCommandeRepository.saveAll(detailCommandes);
+    public DetailCommandeResponse saveDetailCommandeDTO(DetailCommandeRequest d) {
+        return mapper.fromEntityToDTO(repo.save(mapper.fromDTOToEntity(d)));
+    }
+
+    @Override
+    public List<Detail_Commande> saveDetailCommande(List<Detail_Commande> detailCommandes) {
+        return repo.saveAll(detailCommandes);
+    }
+
+    @Override
+    public List<DetailCommandeResponse> saveDetailCommandesDTO(List<DetailCommandeRequest> d) {
+        return mapper.fromListEntityToListDTO(repo.saveAll(mapper.fromListDTOToListEntity(d)));
     }
 
     @Override
     public Detail_Commande selectDetailCommandeByIdWithGet(long id) {
-        return detailCommandeRepository.findById(id).get();
+        return repo.findById(id).get();
+    }
+
+    @Override
+    public DetailCommandeResponse getDetailCommandeByIdDTO(long id) {
+        return mapper.fromEntityToDTO(repo.findById(id).get());
     }
 
     @Override
     public Detail_Commande selectDetailCommandeByIdWithOrElse(long id) {
         Detail_Commande fakeDetailCommande = Detail_Commande.builder()
-            .quantiteArticle(5)
-            .sousTotalDetailArticle(5000)
-            .sousTotalDetailArticleApresPromo(1200)
-            .build();
-        return detailCommandeRepository.findById(id).orElse(fakeDetailCommande);
+                .quantiteArticle(10)
+                .sousTotalDetailArticle(0)
+                .sousTotalDetailArticleApresPromo(3)
+                .build();
+        return repo.findById(id).orElse(fakeDetailCommande);
     }
 
     @Override
-    public List<Detail_Commande> selectAllDetailCommandes() {
-        return detailCommandeRepository.findAll();
+    public List<Detail_Commande> selectAllDetailCommande() {
+        return repo.findAll();
     }
 
     @Override
-    public void deleteDetailCommande(Detail_Commande detailCommande) {
-        detailCommandeRepository.delete(detailCommande);
+    public List<DetailCommandeResponse> getAllDetailCommandesDTO() {
+        return mapper.fromListEntityToListDTO(repo.findAll());
     }
 
     @Override
-    public void deleteAllDetailCommandes() {
-        detailCommandeRepository.deleteAll();
+    public void deleteDetailCommande(Detail_Commande a) {
+        repo.delete(a);
+    }
+
+    @Override
+    public void deleteAllDetailCommande() {
+        repo.deleteAll();
     }
 
     @Override
     public void deleteDetailCommandeById(long id) {
-        detailCommandeRepository.deleteById(id);
+        repo.deleteById(id);
     }
 
     @Override
-    public long countingDetailCommandes() {
-        return detailCommandeRepository.count();
+    public long countingDetailCommande() {
+        return repo.count();
     }
 
     @Override
     public boolean verifDetailCommandeById(long id) {
-        return detailCommandeRepository.existsById(id);
+        return repo.existsById(id);
     }
 }
