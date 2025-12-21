@@ -15,4 +15,6 @@ public interface IClientService {
     void deleteClientById(long id);
     long countingClients();
     boolean verifClientById(long id);
+
+    List<Client> incrementerPts();
 }

@@ -66,17 +66,16 @@ public Commande selectCommandeByIdWithOrElse(long id) {
     public boolean verifCommandeById(long id) {
         return commandeRepository.existsById(id);
     }
-    @Override
-    public void affecterCommandeAClient(Long idCommande, Long idClient) {
+   // @Override
+   // public void affecterCommandeAClient(Long idCommande, Long idClient) {
         //Recuperer les objets
-        Commande commande=CommandeRepository.findById(idCommande).get();
-        Client client=CommandeRepository.findById(idClient).get();
+     //   Commande commande=CommandeRepository.findById(idCommande).get();
+       // Client client=CommandeRepository.findById(idClient).get();
         //2-parent (commande)? child (client)?
         //3 on affecte le child au paerent
-        commande.setClient(client);
+        //commande.setClient(client);
         //4-Persistance de affection (save du parent)
-        CommandeRepository.save(commande);
+        //CommandeRepository.save(commande);
 
 
     }
-}

@@ -2,6 +2,7 @@ package org.example.tpcafechaimasammoud.Services;
 
 import lombok.AllArgsConstructor;
 import org.example.tpcafechaimasammoud.entite.Client;
+import org.example.tpcafechaimasammoud.repositeries.CarteFideliteRepository;
 import org.example.tpcafechaimasammoud.repositeries.ClientRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ClientService implements IClientService {
     ClientRepository clientRepository;
+    CarteFideliteRepository carteFideliteRepository;
 
     @Override
     public Client addClient(Client client) {
@@ -66,4 +68,19 @@ public Client selectClientByIdWithOrElse(long id) {
     public boolean verifClientById(long id) {
         return clientRepository.existsById(id);
     }
-}
+
+    @Override
+    public List<Client> incrementerPts(){
+        List<Client> list = clientRepository.findByDateNaissance(LocalDate.now());
+        for (Client c : list) {
+            c.getCarteFidelite().setPointsAccumules((int) (c.getCarteFidelite().getPointsAccumules()
+                    + (c.getCarteFidelite().getPointsAccumules() * 0.1)));
+            carteFideliteRepository.save(c.getCarteFidelite());
+        }
+        return list;
+
+        }
+    }
+
+    //@Override
+    //public void ajouterCommandeEtAffecterAClient(Commande c , )

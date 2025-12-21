@@ -141,4 +141,7 @@ public interface ArticleRepository extends JpaRepository<Article,Long> {
     @Query("SELECT a FROM Article a JOIN a.promotions p WHERE p.pourcentagePromo >= :percentage")
     List<Article> findByPromotionPercentageGreaterThan(@Param("percentage") float percentage);
 
+    // aficher les article qui est en pro au debut de mois
+   // @Query("SELECT DISTINCT a FROM Article a JOIN a.promotions p on p.idPromotion = a.idArticle join Article art on a.idArticle = art.idArticle where EXTRACT(MONTH FROM a.dateDebutPromo)
+
 }

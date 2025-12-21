@@ -1,5 +1,7 @@
 package org.example.tpcafechaimasammoud.Services;
 import org.example.tpcafechaimasammoud.entite.Article;
+import org.example.tpcafechaimasammoud.entite.Promotion;
+
 import java.util.List;
 
 public interface IArticleService {
@@ -14,4 +16,7 @@ public interface IArticleService {
     long countingArticles();
     boolean verifArticleById(long id);
 
+
+
+    void affecterPromotionAArticle(Promotion p , long idArticle);
 }

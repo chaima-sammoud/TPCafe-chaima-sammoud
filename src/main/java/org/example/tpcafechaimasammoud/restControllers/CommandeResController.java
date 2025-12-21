@@ -15,13 +15,5 @@ import java.util.List;
 @RequestMapping("commande")
 
 public class CommandeResController {
-    ICommandeService service;
-    @GetMapping
-    public List<Commande> findAll() {
-        return service.selectAllCommandes();
-    }
-    //find by id
-    public Commande findById(long id) {
-        return service.selectCommandeByIdWithGet(id);
-    }
+
 }

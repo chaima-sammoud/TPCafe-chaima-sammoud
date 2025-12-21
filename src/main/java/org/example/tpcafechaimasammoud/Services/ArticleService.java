@@ -2,7 +2,9 @@ package org.example.tpcafechaimasammoud.Services;
 
 import lombok.AllArgsConstructor;
 import org.example.tpcafechaimasammoud.entite.Article;
+import org.example.tpcafechaimasammoud.entite.Promotion;
 import org.example.tpcafechaimasammoud.repositeries.ArticleRepository;
+import org.example.tpcafechaimasammoud.repositeries.PromotionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ArticleService implements IArticleService {
     ArticleRepository articleRepository;
+    PromotionRepository promotionRepository;
 
     @Override
     public Article addArticle(Article article) {
@@ -66,4 +69,21 @@ public class ArticleService implements IArticleService {
     }
 
 
-}
+
+        // 1- get larticle 2/article.getpromotion.add(promo 3/ artcilerepo.save(article)
+
+    @Override
+    public void affecterPromotionAArticle(Promotion p , long idArticle) {
+
+
+        Article article = articleRepository.findById(idArticle).get();
+        article.getPromotions().add(p);
+        articleRepository.save(article);
+
+    }
+    //afficher les article en promo
+
+
+
+
+    }

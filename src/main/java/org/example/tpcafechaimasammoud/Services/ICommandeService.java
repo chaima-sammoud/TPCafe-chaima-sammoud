@@ -17,5 +17,4 @@ public interface ICommandeService {
     boolean verifCommandeById(long id);
     //find by id
 
-    void affecterCommandeAClient(Long idCommande, Long idClient);
 }

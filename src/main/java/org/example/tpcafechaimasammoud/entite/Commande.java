@@ -18,6 +18,7 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Commande {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_commande")
@@ -31,14 +32,14 @@ public class Commande {
 
     @Column(name = "status_commande")
     @Enumerated(EnumType.STRING)
-    private StatusCommande StatusCommande;
+    private StatusCommande statusCommande; // ✔ CORRECTION ICI
+
     @ManyToOne
     @JoinColumn(name = "id_client", referencedColumnName = "id_client")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Client client;
 
-    // One commande has many detail_commande
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

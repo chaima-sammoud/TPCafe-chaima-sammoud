@@ -13,6 +13,7 @@ import java.util.Optional;
 
 
 public interface CarteFideliteRepository extends JpaRepository<CarteFidelite, Long> {
+
     List<CarteFidelite> findByPointsAccumules(int pointsAccumules);
     @Query("SELECT cf FROM CarteFidelite cf WHERE cf.pointsAccumules = :pointsAccumules")
     List<CarteFidelite> findByPointsAccumulesJPQL(@Param("pointsAccumules") int pointsAccumules);

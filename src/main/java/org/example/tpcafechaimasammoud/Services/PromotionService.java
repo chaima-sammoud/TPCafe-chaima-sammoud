@@ -66,4 +66,15 @@ public Promotion selectPromotionByIdWithOrElse(long id) {
     public boolean verifPromotionById(long id) {
         return promotionRepository.existsById(id);
     }
-}
+
+
+        // 1- get larticle 2/article.getpromotion.add(promo 3/ artcilerepo.save(article)
+
+
+
+
+
+
+
+
+    }

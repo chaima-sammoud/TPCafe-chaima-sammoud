@@ -2,7 +2,9 @@ package org.example.tpcafechaimasammoud.Services;
 
 import lombok.AllArgsConstructor;
 import org.example.tpcafechaimasammoud.entite.CarteFidelite;
+import org.example.tpcafechaimasammoud.entite.Client;
 import org.example.tpcafechaimasammoud.repositeries.CarteFideliteRepository;
+import org.example.tpcafechaimasammoud.repositeries.ClientRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -11,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CarteFideliteService implements ICarteFideliteService {
     CarteFideliteRepository carteFideliteRepository;
+    ClientRepository clientRepository;
 
     @Override
     public CarteFidelite addCarteFidelite(CarteFidelite carteFidelite) {
@@ -64,5 +67,23 @@ public CarteFidelite selectCarteFideliteByIdWithOrElse(long id) {
     @Override
     public boolean verifCarteFideliteById(long id) {
         return carteFideliteRepository.existsById(id);
+    }
+    public void ajouterClientEtCarteFidelite(CarteFidelite carteFidelite) {
+        Client c=clientRepository.save(carteFidelite.getClient());
+        carteFidelite=carteFideliteRepository.save(carteFidelite);
+        // parent ?  howa client child ? howa carte fidelite
+        c.setCarteFidelite(carteFidelite);
+        clientRepository.save(c);
+
+        // Implementation pending
+    }
+    public void addClientEtCarteFidelite(Client client){
+        // la creation de la carte fidelité se fait dans le code
+        CarteFidelite carteFidelite= CarteFidelite.builder()
+                .pointsAccumules(0)
+                .dateCreation(LocalDate.now())
+                .build();
+        client.setCarteFidelite(carteFidelite);
+        clientRepository.save(client);
     }
 }
